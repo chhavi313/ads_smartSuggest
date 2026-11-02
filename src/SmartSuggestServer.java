@@ -10,7 +10,9 @@ import java.util.*;
 
 public class SmartSuggestServer {
 
-    private static final int PORT = 8081;
+    private static final int PORT = Integer.parseInt(
+            System.getenv().getOrDefault("PORT", "8081")
+    );
 
     private static final SuggestionEngine engine =
             new SuggestionEngine();
@@ -18,7 +20,7 @@ public class SmartSuggestServer {
     public static void main(String[] args) throws IOException {
 
         HttpServer server = HttpServer.create(
-                new InetSocketAddress(PORT), 0
+                new InetSocketAddress("0.0.0.0", PORT), 0
         );
 
         // API: Get autocomplete suggestions
@@ -30,9 +32,7 @@ public class SmartSuggestServer {
                 return;
             }
 
-            Map<String, String> params =
-                    getQueryParams(exchange);
-
+            Map<String, String> params = getQueryParams(exchange);
             String prefix = params.getOrDefault("prefix", "");
 
             List<Suggestion> suggestions;
@@ -42,7 +42,7 @@ public class SmartSuggestServer {
             }
 
             StringBuilder json = new StringBuilder("[");
-            
+
             for (int i = 0; i < suggestions.size(); i++) {
 
                 Suggestion s = suggestions.get(i);
@@ -75,7 +75,6 @@ public class SmartSuggestServer {
             }
 
             Map<String, String> data = readForm(exchange);
-
             String word = data.get("word");
 
             if (word == null || word.isBlank()) {
@@ -102,7 +101,6 @@ public class SmartSuggestServer {
             }
 
             Map<String, String> data = readForm(exchange);
-
             String word = data.get("word");
 
             if (word == null || !word.trim().matches("[a-zA-Z]+")) {
@@ -145,12 +143,10 @@ public class SmartSuggestServer {
                 return;
             }
 
-            String contentType = getContentType(file);
-
             byte[] content = Files.readAllBytes(file);
 
             exchange.getResponseHeaders().set(
-                    "Content-Type", contentType
+                    "Content-Type", getContentType(file)
             );
 
             exchange.sendResponseHeaders(200, content.length);
@@ -166,12 +162,9 @@ public class SmartSuggestServer {
         System.out.println("==================================");
         System.out.println("       SMARTSUGGEST SERVER");
         System.out.println("==================================");
-        System.out.println("Server running at:");
-        System.out.println("http://localhost:" + PORT);
-        System.out.println("Press Ctrl + C to stop the server.");
+        System.out.println("Server running on port: " + PORT);
     }
 
-    // Read URL query parameters
     private static Map<String, String> getQueryParams(
             HttpExchange exchange) {
 
@@ -184,7 +177,6 @@ public class SmartSuggestServer {
         return parseForm(query);
     }
 
-    // Read POST form data
     private static Map<String, String> readForm(
             HttpExchange exchange) throws IOException {
 
@@ -200,7 +192,6 @@ public class SmartSuggestServer {
         return parseForm(body);
     }
 
-    // Parse URL-encoded data
     private static Map<String, String> parseForm(String data) {
 
         Map<String, String> result = new HashMap<>();
@@ -231,17 +222,30 @@ public class SmartSuggestServer {
         );
     }
 
-    // Escape text for valid JSON strings
     private static String escapeJson(String value) {
 
-        return value.replace("\\", "\\\\")
-                    .replace("\"", "\\\"")
-                    .replace("\n", "\\n")
-                    .replace("\r", "\\r")
-                    .replace("\t", "\\t");
+        StringBuilder result = new StringBuilder();
+
+        for (char c : value.toCharArray()) {
+
+            switch (c) {
+                case '"': result.append("\\\""); break;
+                case '\\': result.append("\\\\"); break;
+                case '\n': result.append("\\n"); break;
+                case '\r': result.append("\\r"); break;
+                case '\t': result.append("\\t"); break;
+                default:
+                    if (c < 0x20) {
+                        result.append(String.format("\\u%04x", (int) c));
+                    } else {
+                        result.append(c);
+                    }
+            }
+        }
+
+        return result.toString();
     }
 
-    // Send JSON response
     private static void sendJson(
             HttpExchange exchange,
             int status,
@@ -260,7 +264,6 @@ public class SmartSuggestServer {
         }
     }
 
-    // Send plain text response
     private static void sendText(
             HttpExchange exchange,
             int status,
@@ -279,7 +282,6 @@ public class SmartSuggestServer {
         }
     }
 
-    // Identify website file types
     private static String getContentType(Path file) {
 
         String name = file.toString().toLowerCase();
