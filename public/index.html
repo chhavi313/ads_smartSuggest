@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSuggest | Intelligent Search</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">✦ SmartSuggest</div>
+        <div class="nav-tag">POWERED BY TRIE + MAX HEAP</div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="eyebrow">INTELLIGENT SEARCH EXPERIENCE</div>
+
+            <h1>Find what you're looking for.<br>
+                <span>Before you finish typing.</span>
+            </h1>
+
+            <p class="subtitle">
+                A smart autocomplete system that understands your search
+                and ranks suggestions based on popularity.
+            </p>
+
+            <div class="search-card">
+                <div class="search-box">
+                    <span class="search-icon">⌕</span>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Start typing a word... e.g. app"
+                        autocomplete="off"
+                    >
+                    <button id="clearButton" class="clear-btn">✕</button>
+                </div>
+
+                <div id="suggestions" class="suggestions"></div>
+
+                <div class="search-footer">
+                    <span>⌨ Live suggestions</span>
+                    <span>Top 5 ranked results</span>
+                </div>
+            </div>
+
+            <div id="selectionMessage" class="message"></div>
+        </section>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">⌕</div>
+                <h3>Fast Prefix Search</h3>
+                <p>Trie data structure finds matching words efficiently.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">↕</div>
+                <h3>Smart Ranking</h3>
+                <p>Max Heap prioritizes the most frequently searched words.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">↗</div>
+                <h3>Adaptive Learning</h3>
+                <p>Search selections update word frequencies dynamically.</p>
+            </div>
+        </section>
+
+        <section class="add-section">
+            <div>
+                <div class="eyebrow">EXPAND THE DICTIONARY</div>
+                <h2>Add a new word</h2>
+                <p>Make your autocomplete dictionary smarter.</p>
+            </div>
+
+            <div class="add-controls">
+                <input
+                    type="text"
+                    id="newWordInput"
+                    placeholder="Enter a word..."
+                >
+                <button id="addWordButton">+ Add Word</button>
+            </div>
+
+            <div id="addMessage" class="add-message"></div>
+        </section>
+
+    </main>
+
+    <footer>
+        <span>SmartSuggest © 2026</span>
+        <span>Designed using Data Structures & Algorithms</span>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
